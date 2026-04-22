@@ -114,7 +114,7 @@ function Surface({
   return (
     <div
       id={id}
-      className={`rounded-[28px] border border-white/[0.08] bg-white/[0.03] shadow-[0_0_0_1px_rgba(255,255,255,0.02),0_24px_80px_rgba(0,0,0,0.42)] backdrop-blur-xl ${className}`}
+      className={`rounded-[28px] border border-[var(--border-soft)] bg-[var(--surface-1)] shadow-[0_0_0_1px_var(--border-soft),0_24px_80px_rgba(15,23,42,0.16)] backdrop-blur-xl ${className}`}
     >
       {children}
     </div>
@@ -132,15 +132,15 @@ function StatCard({
 }) {
   return (
     <Surface className="rounded-[24px] p-5">
-      <p className="text-[11px] font-medium uppercase tracking-[0.28em] text-slate-500">{label}</p>
-      <p className="mt-4 text-4xl font-semibold tracking-[-0.05em] text-white">{value}</p>
-      <p className="mt-2 text-sm text-slate-400">{helper}</p>
+      <p className="text-[11px] font-medium uppercase tracking-[0.28em] text-[var(--text-faint)]">{label}</p>
+      <p className="mt-4 text-4xl font-semibold tracking-[-0.05em] text-[var(--text-primary)]">{value}</p>
+      <p className="mt-2 text-sm text-[var(--text-muted)]">{helper}</p>
     </Surface>
   );
 }
 
 function SectionEyebrow({ children }: { children: React.ReactNode }) {
-  return <p className="text-[11px] font-medium uppercase tracking-[0.32em] text-slate-500">{children}</p>;
+  return <p className="text-[11px] font-medium uppercase tracking-[0.32em] text-[var(--text-faint)]">{children}</p>;
 }
 
 export default async function Home({
@@ -187,20 +187,20 @@ export default async function Home({
                 SH
               </div>
               <div>
-                <p className="text-sm font-medium text-white">Salas Hermes</p>
-                <p className="text-sm text-slate-400">Presentación interna · workspace Montevideo</p>
+                <p className="text-sm font-medium text-[var(--text-primary)]">Salas Hermes</p>
+                <p className="text-sm text-[var(--text-muted)]">Presentación interna · workspace Montevideo</p>
               </div>
             </div>
 
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-              <div className="rounded-full border border-white/10 bg-black/20 px-4 py-2 text-sm text-slate-400">
+              <div className="rounded-full border border-[var(--border-strong)] bg-[var(--surface-2)] px-4 py-2 text-sm text-[var(--text-muted)]">
                 Quick look listo para demo · {weekRange}
               </div>
               <div className="flex flex-wrap gap-2">
                 <ThemeToggle />
                 <Link
                   href="/api/rooms"
-                  className="rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-sm text-slate-200 transition hover:border-white/20 hover:bg-white/[0.06]"
+                  className="rounded-full border border-[var(--border-strong)] bg-[var(--surface-2)] px-4 py-2 text-sm text-[var(--text-secondary)] transition hover:border-[var(--border-contrast)] hover:bg-[var(--surface-3)]"
                 >
                   API rooms
                 </Link>
@@ -221,14 +221,14 @@ export default async function Home({
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(94,106,210,0.26),transparent_28%),radial-gradient(circle_at_75%_20%,rgba(113,112,255,0.14),transparent_22%)]" />
           <div className="relative z-10 grid gap-8 lg:grid-cols-[minmax(0,1fr)_300px]">
             <div className="space-y-6">
-              <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs uppercase tracking-[0.28em] text-slate-300">
+              <div className="inline-flex items-center gap-2 rounded-full border border-[var(--border-strong)] bg-[var(--surface-2)] px-3 py-1 text-xs uppercase tracking-[0.28em] text-[var(--text-secondary)]">
                 Diseño listo para presentar
               </div>
               <div className="space-y-4">
-                <h1 className="max-w-3xl text-4xl font-semibold leading-none tracking-[-0.07em] text-white sm:text-5xl lg:text-6xl">
+                <h1 className="max-w-3xl text-4xl font-semibold leading-none tracking-[-0.07em] text-[var(--text-primary)] sm:text-5xl lg:text-6xl">
                   Dashboard premium para mostrar la disponibilidad semanal de salas.
                 </h1>
-                <p className="max-w-2xl text-base leading-7 text-slate-400 sm:text-lg">
+                <p className="max-w-2xl text-base leading-7 text-[var(--text-muted)] sm:text-lg">
                   Dejé una versión más ejecutiva, tipo Linear/Vercel: foco en claridad, lectura rápida,
                   estados visibles y recorrido de producto listo para que lo presentés aunque todavía
                   estemos usando fallback demo detrás.
@@ -238,13 +238,13 @@ export default async function Home({
               <div className="flex flex-wrap gap-3">
                 <Link
                   href="#agenda"
-                  className="rounded-full bg-white px-5 py-3 text-sm font-medium text-black transition hover:bg-slate-200"
+                  className="rounded-full bg-[var(--surface-inverse)] px-5 py-3 text-sm font-medium text-[var(--surface-strong)] transition opacity-95 hover:opacity-100"
                 >
                   Ver agenda semanal
                 </Link>
                 <Link
                   href="#filtros"
-                  className="rounded-full border border-white/10 bg-white/[0.03] px-5 py-3 text-sm font-medium text-slate-200 transition hover:border-white/20 hover:bg-white/[0.06]"
+                  className="rounded-full border border-[var(--border-strong)] bg-[var(--surface-2)] px-5 py-3 text-sm font-medium text-[var(--text-secondary)] transition hover:border-[var(--border-contrast)] hover:bg-[var(--surface-3)]"
                 >
                   Ajustar filtros
                 </Link>
@@ -257,21 +257,21 @@ export default async function Home({
               </div>
             </div>
 
-            <Surface className="rounded-[26px] border-white/[0.1] bg-black/20 p-5">
+            <Surface className="rounded-[26px] border-[var(--border-strong)] bg-[var(--surface-2)] p-5">
               <SectionEyebrow>Resumen ejecutivo</SectionEyebrow>
               <div className="mt-5 space-y-5">
-                <div className="rounded-[22px] border border-white/10 bg-white/[0.03] p-4">
-                  <p className="text-sm text-slate-400">Usuario demo</p>
-                  <p className="mt-2 text-xl font-semibold text-white">{currentUser}</p>
-                  <p className="mt-1 text-sm text-slate-500">Simula el panel de “mis reservas”.</p>
+                <div className="rounded-[22px] border border-[var(--border-strong)] bg-[var(--surface-2)] p-4">
+                  <p className="text-sm text-[var(--text-muted)]">Usuario demo</p>
+                  <p className="mt-2 text-xl font-semibold text-[var(--text-primary)]">{currentUser}</p>
+                  <p className="mt-1 text-sm text-[var(--text-faint)]">Simula el panel de “mis reservas”.</p>
                 </div>
 
                 <div className="space-y-3">
                   {legendItems.map((item) => (
-                    <div key={item.label} className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.02] px-4 py-3">
+                    <div key={item.label} className="flex items-center justify-between rounded-2xl border border-[var(--border-strong)] bg-[var(--surface-1)] px-4 py-3">
                       <div className="flex items-center gap-3">
                         <span className={`h-2.5 w-2.5 rounded-full ${item.dot}`} />
-                        <span className="text-sm text-slate-200">{item.label}</span>
+                        <span className="text-sm text-[var(--text-secondary)]">{item.label}</span>
                       </div>
                       <span className={`rounded-full border px-2.5 py-1 text-[11px] uppercase tracking-[0.22em] ${item.chip}`}>
                         visible
@@ -293,18 +293,18 @@ export default async function Home({
             <div className="flex items-center justify-between gap-3">
               <div>
                 <SectionEyebrow>Exploración</SectionEyebrow>
-                <h2 className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-white">Filtros y navegación</h2>
+                <h2 className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-[var(--text-primary)]">Filtros y navegación</h2>
               </div>
               <div className="flex gap-2">
                 <Link
                   href={buildHref(params, { week: navigation.previous })}
-                  className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-sm text-slate-200 transition hover:border-white/20 hover:bg-white/[0.06]"
+                  className="rounded-full border border-[var(--border-strong)] bg-[var(--surface-2)] px-3 py-2 text-sm text-[var(--text-secondary)] transition hover:border-[var(--border-contrast)] hover:bg-[var(--surface-3)]"
                 >
                   ← Prev
                 </Link>
                 <Link
                   href={buildHref(params, { week: navigation.next })}
-                  className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-sm text-slate-200 transition hover:border-white/20 hover:bg-white/[0.06]"
+                  className="rounded-full border border-[var(--border-strong)] bg-[var(--surface-2)] px-3 py-2 text-sm text-[var(--text-secondary)] transition hover:border-[var(--border-contrast)] hover:bg-[var(--surface-3)]"
                 >
                   Next →
                 </Link>
@@ -314,23 +314,23 @@ export default async function Home({
             <form className="mt-6 space-y-4" method="GET">
               <input type="hidden" name="week" value={weekAnchor} />
 
-              <label className="block space-y-2 text-sm text-slate-300">
+              <label className="block space-y-2 text-sm text-[var(--text-secondary)]">
                 <span>Búsqueda</span>
                 <input
                   name="q"
                   defaultValue={filters.query}
                   placeholder="Sala, equipamiento, ubicación"
-                  className="w-full rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-white outline-none transition placeholder:text-slate-600 focus:border-[#7170ff] focus:bg-white/[0.05]"
+                  className="w-full rounded-2xl border border-[var(--border-strong)] bg-[var(--surface-2)] px-4 py-3 text-[var(--text-primary)] outline-none transition placeholder:text-[var(--text-faint)] focus:border-[#7170ff] focus:bg-[var(--surface-3)]"
                 />
               </label>
 
               <div className="grid gap-4 sm:grid-cols-2">
-                <label className="block space-y-2 text-sm text-slate-300">
+                <label className="block space-y-2 text-sm text-[var(--text-secondary)]">
                   <span>Owner</span>
                   <select
                     name="owner"
                     defaultValue={filters.owner}
-                    className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none focus:border-[#7170ff]"
+                    className="w-full rounded-2xl border border-[var(--border-strong)] bg-[var(--surface-2)] px-4 py-3 text-[var(--text-primary)] outline-none focus:border-[#7170ff]"
                   >
                     <option value="">Todos</option>
                     {owners.map((owner) => (
@@ -341,19 +341,19 @@ export default async function Home({
                   </select>
                 </label>
 
-                <label className="block space-y-2 text-sm text-slate-300">
+                <label className="block space-y-2 text-sm text-[var(--text-secondary)]">
                   <span>Participante</span>
                   <input
                     name="participant"
                     defaultValue={filters.participant}
                     placeholder="ana@empresa.com"
-                    className="w-full rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-white outline-none transition placeholder:text-slate-600 focus:border-[#7170ff] focus:bg-white/[0.05]"
+                    className="w-full rounded-2xl border border-[var(--border-strong)] bg-[var(--surface-2)] px-4 py-3 text-[var(--text-primary)] outline-none transition placeholder:text-[var(--text-faint)] focus:border-[#7170ff] focus:bg-[var(--surface-3)]"
                   />
                 </label>
               </div>
 
               <div className="grid gap-4 sm:grid-cols-2">
-                <label className="block space-y-2 text-sm text-slate-300">
+                <label className="block space-y-2 text-sm text-[var(--text-secondary)]">
                   <span>Capacidad mínima</span>
                   <input
                     name="capacityMin"
@@ -361,16 +361,16 @@ export default async function Home({
                     type="number"
                     min="1"
                     placeholder="10"
-                    className="w-full rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-white outline-none transition placeholder:text-slate-600 focus:border-[#7170ff] focus:bg-white/[0.05]"
+                    className="w-full rounded-2xl border border-[var(--border-strong)] bg-[var(--surface-2)] px-4 py-3 text-[var(--text-primary)] outline-none transition placeholder:text-[var(--text-faint)] focus:border-[#7170ff] focus:bg-[var(--surface-3)]"
                   />
                 </label>
 
-                <label className="block space-y-2 text-sm text-slate-300">
+                <label className="block space-y-2 text-sm text-[var(--text-secondary)]">
                   <span>Tipo</span>
                   <select
                     name="resourceType"
                     defaultValue={filters.resourceType}
-                    className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none focus:border-[#7170ff]"
+                    className="w-full rounded-2xl border border-[var(--border-strong)] bg-[var(--surface-2)] px-4 py-3 text-[var(--text-primary)] outline-none focus:border-[#7170ff]"
                   >
                     <option value="all">Todos</option>
                     {resourceTypes.map((type) => (
@@ -388,7 +388,7 @@ export default async function Home({
                 </button>
                 <Link
                   href="/"
-                  className="rounded-full border border-white/10 bg-white/[0.03] px-5 py-3 text-sm font-medium text-slate-200 transition hover:border-white/20 hover:bg-white/[0.06]"
+                  className="rounded-full border border-[var(--border-strong)] bg-[var(--surface-2)] px-5 py-3 text-sm font-medium text-[var(--text-secondary)] transition hover:border-[var(--border-contrast)] hover:bg-[var(--surface-3)]"
                 >
                   Limpiar
                 </Link>
@@ -400,9 +400,9 @@ export default async function Home({
             <div className="flex items-center justify-between gap-3">
               <div>
                 <SectionEyebrow>My workspace</SectionEyebrow>
-                <h2 className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-white">Mis reservas</h2>
+                <h2 className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-[var(--text-primary)]">Mis reservas</h2>
               </div>
-              <span className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs uppercase tracking-[0.22em] text-slate-300">
+              <span className="rounded-full border border-[var(--border-strong)] bg-[var(--surface-2)] px-3 py-1 text-xs uppercase tracking-[0.22em] text-[var(--text-secondary)]">
                 {myBookings.length} items
               </span>
             </div>
@@ -410,17 +410,17 @@ export default async function Home({
               {myBookings.slice(0, 4).map((booking) => {
                 const badge = badgeForBooking(booking, currentUser);
                 return (
-                  <article key={booking.id} className="rounded-[22px] border border-white/10 bg-white/[0.03] p-4">
+                  <article key={booking.id} className="rounded-[22px] border border-[var(--border-strong)] bg-[var(--surface-2)] p-4">
                     <div className="flex items-start justify-between gap-3">
                       <div>
-                        <p className="font-medium text-white">{booking.title}</p>
-                        <p className="mt-1 text-sm text-slate-400">{booking.date} · {booking.start} - {booking.end}</p>
+                        <p className="font-medium text-[var(--text-primary)]">{booking.title}</p>
+                        <p className="mt-1 text-sm text-[var(--text-muted)]">{booking.date} · {booking.start} - {booking.end}</p>
                       </div>
                       <span className={`rounded-full border px-2.5 py-1 text-[11px] uppercase tracking-[0.22em] ${badge.chip}`}>
                         {badge.label}
                       </span>
                     </div>
-                    <p className="mt-3 text-sm text-slate-500">
+                    <p className="mt-3 text-sm text-[var(--text-faint)]">
                       {booking.requester === currentUser ? "Solicitada por mí" : "Soy participante"}
                     </p>
                   </article>
@@ -434,22 +434,22 @@ export default async function Home({
       <section className="grid gap-4 lg:grid-cols-3">
         <Surface className="p-6">
           <SectionEyebrow>Infra</SectionEyebrow>
-          <h3 className="mt-2 text-xl font-semibold tracking-[-0.04em] text-white">Backend listo para la siguiente demo</h3>
-          <p className="mt-3 text-sm leading-6 text-slate-400">
+          <h3 className="mt-2 text-xl font-semibold tracking-[-0.04em] text-[var(--text-primary)]">Backend listo para la siguiente demo</h3>
+          <p className="mt-3 text-sm leading-6 text-[var(--text-muted)]">
             Ya existe schema Prisma, service layer y endpoints para crear, listar y cancelar reservas.
           </p>
         </Surface>
         <Surface className="p-6">
           <SectionEyebrow>Producto</SectionEyebrow>
-          <h3 className="mt-2 text-xl font-semibold tracking-[-0.04em] text-white">Narrativa clara para stakeholders</h3>
-          <p className="mt-3 text-sm leading-6 text-slate-400">
+          <h3 className="mt-2 text-xl font-semibold tracking-[-0.04em] text-[var(--text-primary)]">Narrativa clara para stakeholders</h3>
+          <p className="mt-3 text-sm leading-6 text-[var(--text-muted)]">
             Hero, métricas, agenda y filtros quedaron ordenados para explicar el valor en menos de 3 minutos.
           </p>
         </Surface>
         <Surface className="p-6">
           <SectionEyebrow>Siguiente sprint</SectionEyebrow>
-          <h3 className="mt-2 text-xl font-semibold tracking-[-0.04em] text-white">Auth, forms y persistencia real</h3>
-          <p className="mt-3 text-sm leading-6 text-slate-400">
+          <h3 className="mt-2 text-xl font-semibold tracking-[-0.04em] text-[var(--text-primary)]">Auth, forms y persistencia real</h3>
+          <p className="mt-3 text-sm leading-6 text-[var(--text-muted)]">
             Lo que sigue es completar la operación end-to-end: login, formularios y PostgreSQL productivo.
           </p>
         </Surface>
@@ -457,12 +457,12 @@ export default async function Home({
 
       <section id="agenda">
         <Surface className="overflow-hidden">
-          <div className="border-b border-white/10 px-6 py-5 sm:px-8">
+          <div className="border-b border-[var(--border-strong)] px-6 py-5 sm:px-8">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
               <div>
                 <SectionEyebrow>Agenda semanal</SectionEyebrow>
-                <h2 className="mt-2 text-3xl font-semibold tracking-[-0.06em] text-white">Grilla por sala</h2>
-                <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-400">
+                <h2 className="mt-2 text-3xl font-semibold tracking-[-0.06em] text-[var(--text-primary)]">Grilla por sala</h2>
+                <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--text-muted)]">
                   Vista pensada para presentación: cards limpias, códigos de estado consistentes y catálogo real de salas tomado de tu referencia visual.
                 </p>
               </div>
@@ -478,43 +478,43 @@ export default async function Home({
 
           <div className="overflow-x-auto">
             <div className="min-w-[1180px]">
-              <div className="grid grid-cols-[280px_repeat(5,minmax(0,1fr))] bg-white/[0.02]">
-                <div className="border-r border-white/10 px-6 py-4 text-[11px] font-medium uppercase tracking-[0.3em] text-slate-500">
+              <div className="grid grid-cols-[280px_repeat(5,minmax(0,1fr))] bg-[var(--surface-1)]">
+                <div className="border-r border-[var(--border-strong)] px-6 py-4 text-[11px] font-medium uppercase tracking-[0.3em] text-[var(--text-faint)]">
                   Salas
                 </div>
                 {weekDays.map((day) => (
-                  <div key={day.iso} className="border-r border-white/10 px-5 py-4 last:border-r-0">
-                    <p className="text-[11px] uppercase tracking-[0.3em] text-slate-500">{day.shortLabel}</p>
-                    <p className="mt-2 text-sm text-slate-200">{day.fullLabel}</p>
+                  <div key={day.iso} className="border-r border-[var(--border-strong)] px-5 py-4 last:border-r-0">
+                    <p className="text-[11px] uppercase tracking-[0.3em] text-[var(--text-faint)]">{day.shortLabel}</p>
+                    <p className="mt-2 text-sm text-[var(--text-secondary)]">{day.fullLabel}</p>
                   </div>
                 ))}
               </div>
 
               {filteredRooms.length === 0 ? (
-                <div className="p-12 text-center text-slate-400">No hay salas que coincidan con los filtros actuales.</div>
+                <div className="p-12 text-center text-[var(--text-muted)]">No hay salas que coincidan con los filtros actuales.</div>
               ) : (
                 filteredRooms.map((room) => (
-                  <div key={room.id} className="grid grid-cols-[280px_repeat(5,minmax(0,1fr))] border-t border-white/10">
-                    <div className="border-r border-white/10 px-6 py-6">
+                  <div key={room.id} className="grid grid-cols-[280px_repeat(5,minmax(0,1fr))] border-t border-[var(--border-strong)]">
+                    <div className="border-r border-[var(--border-strong)] px-6 py-6">
                       <div className="flex items-start gap-3">
                         <div className={`mt-1 h-2.5 w-2.5 rounded-full ${room.color}`} />
                         <div>
-                          <p className="text-base font-medium text-white">{room.name}</p>
-                          <p className="mt-1 text-sm text-slate-400">{room.capacity} personas · {room.type}</p>
+                          <p className="text-base font-medium text-[var(--text-primary)]">{room.name}</p>
+                          <p className="mt-1 text-sm text-[var(--text-muted)]">{room.capacity} personas · {room.type}</p>
                         </div>
                       </div>
-                      <p className="mt-4 text-sm leading-6 text-slate-500">{room.location}</p>
-                      <p className="mt-2 text-sm leading-6 text-slate-500">{room.equipment.join(" · ")}</p>
+                      <p className="mt-4 text-sm leading-6 text-[var(--text-faint)]">{room.location}</p>
+                      <p className="mt-2 text-sm leading-6 text-[var(--text-faint)]">{room.equipment.join(" · ")}</p>
                     </div>
 
                     {weekDays.map((day) => {
                       const dayBookings = weeklyBookings[room.id]?.[day.iso] ?? [];
 
                       return (
-                        <div key={day.iso} className="border-r border-white/10 px-4 py-4 last:border-r-0">
-                          <div className="min-h-44 rounded-[24px] border border-white/8 bg-white/[0.02] p-2.5">
+                        <div key={day.iso} className="border-r border-[var(--border-strong)] px-4 py-4 last:border-r-0">
+                          <div className="min-h-44 rounded-[24px] border border-[var(--border-soft)] bg-[var(--surface-1)] p-2.5">
                             {dayBookings.length === 0 ? (
-                              <div className="flex h-full min-h-40 items-center justify-center rounded-[20px] border border-dashed border-white/8 text-sm text-slate-600">
+                              <div className="flex h-full min-h-40 items-center justify-center rounded-[20px] border border-dashed border-[var(--border-strong)] text-sm text-[var(--text-faint)]">
                                 Disponible
                               </div>
                             ) : (
@@ -522,11 +522,11 @@ export default async function Home({
                                 {dayBookings.map((booking) => {
                                   const badge = badgeForBooking(booking, currentUser);
                                   return (
-                                    <article key={booking.id} className="rounded-[20px] border border-white/10 bg-[#14161b] p-3.5 shadow-[0_16px_40px_rgba(0,0,0,0.28)]">
+                                    <article key={booking.id} className="rounded-[20px] border border-[var(--border-strong)] bg-[var(--surface-strong)] p-3.5 shadow-[0_16px_40px_rgba(15,23,42,0.12)]">
                                       <div className="flex items-start justify-between gap-3">
                                         <div>
-                                          <p className="text-sm font-medium text-white">{booking.title}</p>
-                                          <p className="mt-1 text-[11px] uppercase tracking-[0.22em] text-slate-500">
+                                          <p className="text-sm font-medium text-[var(--text-primary)]">{booking.title}</p>
+                                          <p className="mt-1 text-[11px] uppercase tracking-[0.22em] text-[var(--text-faint)]">
                                             {booking.start} — {booking.end}
                                           </p>
                                         </div>
@@ -534,7 +534,7 @@ export default async function Home({
                                           {badge.label}
                                         </span>
                                       </div>
-                                      <div className="mt-3 flex items-center justify-between gap-3 text-xs text-slate-500">
+                                      <div className="mt-3 flex items-center justify-between gap-3 text-xs text-[var(--text-faint)]">
                                         <span>{booking.requester}</span>
                                         <span>{booking.participants.length} invitado(s)</span>
                                       </div>
