@@ -461,7 +461,7 @@ export default async function Home({
                 <SectionEyebrow>Agenda semanal</SectionEyebrow>
                 <h2 className="mt-2 text-3xl font-semibold tracking-[-0.06em] text-white">Grilla por sala</h2>
                 <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-400">
-                  Vista pensada para presentación: cards limpias, códigos de estado consistentes y lectura rápida por día.
+                  Vista pensada para presentación: cards limpias, códigos de estado consistentes y catálogo real de salas tomado de tu referencia visual.
                 </p>
               </div>
               <div className="flex flex-wrap gap-2">

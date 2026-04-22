@@ -11,7 +11,7 @@ describe("booking service", () => {
       filters: {},
     });
 
-    expect(result.stats.rooms).toBe(4);
+    expect(result.stats.rooms).toBe(8);
     expect(result.myBookings).toHaveLength(3);
     expect(result.weekDays[0]?.iso).toBe("2026-04-20");
   });

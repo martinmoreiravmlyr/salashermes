@@ -1,6 +1,6 @@
 import { addWeeks, differenceInMinutes, format, isValid, parseISO, startOfWeek } from "date-fns";
 
-export type RoomType = "sala" | "focus" | "auditorio";
+export type RoomType = "sala" | "box" | "focus";
 export type BookingStatus = "CONFIRMED" | "PENDING" | "CANCELLED";
 
 export type Room = {
@@ -48,43 +48,83 @@ const HOURS_PER_WORKDAY = 10;
 export const rooms: Room[] = [
   {
     id: "atlas",
-    name: "Sala Atlas",
-    capacity: 12,
-    location: "Piso 4 · Montevideo",
+    name: "Box VML planta chica",
+    capacity: 10,
+    location: "Planta chica · Montevideo",
     owner: "Operaciones",
-    type: "sala",
-    equipment: ["TV 75p", "Miro", "Videollamada"],
+    type: "box",
+    equipment: ["TV", "Meet", "Pizarra"],
     color: "bg-sky-500",
   },
   {
     id: "bora",
-    name: "Sala Bora",
-    capacity: 20,
-    location: "Piso 4 · Montevideo",
+    name: "Box VML planta grande",
+    capacity: 14,
+    location: "Planta grande · Montevideo",
     owner: "People",
-    type: "auditorio",
-    equipment: ["Proyector", "Streaming", "Micrófonos"],
+    type: "box",
+    equipment: ["TV grande", "Videollamada", "Speakerphone"],
     color: "bg-violet-500",
   },
   {
     id: "celeste",
-    name: "Focus Celeste",
+    name: "SALA 12",
     capacity: 6,
-    location: "Piso 2 · Montevideo",
+    location: "Piso 1 · Montevideo",
     owner: "IT",
     type: "focus",
-    equipment: ["Monitor 34p", "Zoom Room"],
+    equipment: ["Monitor", "Zoom Room"],
     color: "bg-emerald-500",
   },
   {
     id: "delta",
-    name: "Sala Delta",
-    capacity: 10,
+    name: "SALA 4",
+    capacity: 12,
     location: "Piso 1 · Montevideo",
     owner: "Comercial",
     type: "sala",
     equipment: ["Pizarra", "Speakerphone"],
     color: "bg-amber-500",
+  },
+  {
+    id: "sala-5",
+    name: "SALA 5",
+    capacity: 8,
+    location: "Piso 1 · Montevideo",
+    owner: "Clientes",
+    type: "sala",
+    equipment: ["TV", "HDMI"],
+    color: "bg-rose-500",
+  },
+  {
+    id: "sala-6a",
+    name: "SALA 6A",
+    capacity: 8,
+    location: "Piso 2 · Montevideo",
+    owner: "Strategy",
+    type: "sala",
+    equipment: ["Pizarra", "Meet"],
+    color: "bg-cyan-500",
+  },
+  {
+    id: "sala-6b",
+    name: "SALA 6B",
+    capacity: 8,
+    location: "Piso 2 · Montevideo",
+    owner: "Creatividad",
+    type: "sala",
+    equipment: ["TV", "Apple TV"],
+    color: "bg-indigo-500",
+  },
+  {
+    id: "sala-bo",
+    name: "Sala BO",
+    capacity: 16,
+    location: "Board area · Montevideo",
+    owner: "Dirección",
+    type: "sala",
+    equipment: ["Pantalla", "Speakerphone", "Coffee point"],
+    color: "bg-fuchsia-500",
   },
 ];
 
@@ -94,7 +134,7 @@ export const bookings: Booking[] = [
     roomId: "bora",
     date: "2026-04-20",
     start: "08:00",
-    end: "18:00",
+    end: "11:00",
     title: "All hands Q2",
     requester: "lucia@empresa.com",
     participants: ["ceo@empresa.com", "ops@empresa.com"],
@@ -105,7 +145,7 @@ export const bookings: Booking[] = [
     roomId: "atlas",
     date: "2026-04-21",
     start: "08:00",
-    end: "18:00",
+    end: "10:00",
     title: "Sprint planning Producto",
     requester: "martin@empresa.com",
     participants: ["ana@empresa.com", "diego@empresa.com"],
@@ -113,6 +153,28 @@ export const bookings: Booking[] = [
   },
   {
     id: "r3",
+    roomId: "sala-5",
+    date: "2026-04-21",
+    start: "11:00",
+    end: "12:00",
+    title: "Catch-up con cliente",
+    requester: "comercial@empresa.com",
+    participants: ["clientes@empresa.com"],
+    status: "CONFIRMED",
+  },
+  {
+    id: "r4",
+    roomId: "sala-6a",
+    date: "2026-04-22",
+    start: "09:00",
+    end: "11:00",
+    title: "Planning estrategia",
+    requester: "strategy@empresa.com",
+    participants: ["pm@empresa.com"],
+    status: "CONFIRMED",
+  },
+  {
+    id: "r5",
     roomId: "atlas",
     date: "2026-04-22",
     start: "08:00",
@@ -123,7 +185,7 @@ export const bookings: Booking[] = [
     status: "CONFIRMED",
   },
   {
-    id: "r4",
+    id: "r6",
     roomId: "atlas",
     date: "2026-04-22",
     start: "13:00",
@@ -134,7 +196,7 @@ export const bookings: Booking[] = [
     status: "PENDING",
   },
   {
-    id: "r5",
+    id: "r7",
     roomId: "delta",
     date: "2026-04-23",
     start: "08:00",
@@ -145,11 +207,11 @@ export const bookings: Booking[] = [
     status: "CONFIRMED",
   },
   {
-    id: "r6",
+    id: "r8",
     roomId: "celeste",
     date: "2026-04-23",
     start: "08:00",
-    end: "18:00",
+    end: "12:00",
     title: "Entrevistas backend",
     requester: "it@empresa.com",
     participants: ["recruiting@empresa.com"],
@@ -157,7 +219,18 @@ export const bookings: Booking[] = [
     restricted: true,
   },
   {
-    id: "r7",
+    id: "r9",
+    roomId: "sala-6b",
+    date: "2026-04-23",
+    start: "14:00",
+    end: "16:00",
+    title: "Review creativa",
+    requester: "creatividad@empresa.com",
+    participants: ["brand@empresa.com"],
+    status: "CONFIRMED",
+  },
+  {
+    id: "r10",
     roomId: "bora",
     date: "2026-04-24",
     start: "08:00",
@@ -165,6 +238,17 @@ export const bookings: Booking[] = [
     title: "Demo day clientes",
     requester: "marketing@empresa.com",
     participants: ["partners@empresa.com"],
+    status: "CONFIRMED",
+  },
+  {
+    id: "r11",
+    roomId: "sala-bo",
+    date: "2026-04-24",
+    start: "10:00",
+    end: "12:00",
+    title: "Comité dirección",
+    requester: "direccion@empresa.com",
+    participants: ["finance@empresa.com"],
     status: "CONFIRMED",
   },
 ];
@@ -180,7 +264,7 @@ export function buildWeekDays(anchorIso: string): WeekDay[] {
   const monday = startOfWeek(parseISO(normalizeWeekAnchor(anchorIso)), { weekStartsOn: 1 });
 
   return Array.from({ length: 5 }, (_, index) => {
-    const current = addWeeks(monday, 0);
+    const current = new Date(monday);
     current.setDate(monday.getDate() + index);
     const iso = format(current, "yyyy-MM-dd");
     return {

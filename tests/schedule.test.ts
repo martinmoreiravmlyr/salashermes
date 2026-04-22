@@ -9,6 +9,19 @@ import {
 } from "@/lib/schedule";
 
 describe("schedule helpers", () => {
+  it("exposes the real room catalog from the visual reference", () => {
+    expect(rooms.map((room) => room.name)).toEqual([
+      "Box VML planta chica",
+      "Box VML planta grande",
+      "SALA 12",
+      "SALA 4",
+      "SALA 5",
+      "SALA 6A",
+      "SALA 6B",
+      "Sala BO",
+    ]);
+  });
+
   it("builds a monday-first work week from an anchor date", () => {
     expect(buildWeekDays("2026-04-22").map((day) => day.iso)).toEqual([
       "2026-04-20",
@@ -22,7 +35,7 @@ describe("schedule helpers", () => {
   it("filters rooms by capacity, type and participant", () => {
     const result = filterRooms(rooms, bookings, {
       capacityMin: 10,
-      resourceType: "sala",
+      resourceType: "box",
       participant: "ana@empresa.com",
     });
 
@@ -41,9 +54,9 @@ describe("schedule helpers", () => {
   it("calculates dashboard stats from the filtered set", () => {
     const result = getDashboardStats(rooms, bookings, buildWeekDays("2026-04-22"));
 
-    expect(result.rooms).toBe(4);
-    expect(result.reservations).toBe(7);
+    expect(result.rooms).toBe(8);
+    expect(result.reservations).toBe(11);
     expect(result.pending).toBe(1);
-    expect(result.averageOccupancy).toBe(30);
+    expect(result.averageOccupancy).toBe(12);
   });
 });
