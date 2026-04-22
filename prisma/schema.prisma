@@ -1,0 +1,101 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  ADMIN
+  USER
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+}
+
+enum RoomType {
+  SALA
+  FOCUS
+  AUDITORIO
+}
+
+model User {
+  id              String      @id @default(cuid())
+  name            String
+  email           String      @unique
+  passwordHash    String?
+  role            UserRole    @default(USER)
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  reservations    Booking[]   @relation("RequesterReservations")
+  participations  BookingParticipant[]
+  auditLogs       AuditLog[]
+}
+
+model Room {
+  id            String    @id @default(cuid())
+  slug          String    @unique
+  name          String
+  capacity      Int
+  location      String
+  owner         String
+  type          RoomType
+  equipment     Json
+  photoUrl      String?
+  isReservable  Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  bookings      Booking[]
+}
+
+model Booking {
+  id              String               @id @default(cuid())
+  roomId           String
+  requesterId      String
+  date             DateTime
+  startAt          DateTime
+  endAt            DateTime
+  title            String
+  reason           String?
+  status           BookingStatus       @default(PENDING)
+  requiresApproval Boolean             @default(false)
+  restricted       Boolean             @default(false)
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+  cancelledAt      DateTime?
+  cancelledById    String?
+  room             Room                @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  requester        User                @relation("RequesterReservations", fields: [requesterId], references: [id], onDelete: Cascade)
+  participants     BookingParticipant[]
+
+  @@index([roomId, date])
+  @@index([requesterId, date])
+}
+
+model BookingParticipant {
+  id         String   @id @default(cuid())
+  bookingId   String
+  userId      String
+  createdAt   DateTime @default(now())
+  booking     Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([bookingId, userId])
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  userId      String?
+  action      String
+  entityType  String
+  entityId    String
+  payload     Json?
+  createdAt   DateTime @default(now())
+  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([entityType, entityId])
+}

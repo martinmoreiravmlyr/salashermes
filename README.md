@@ -1,19 +1,15 @@
 # Salas Hermes
 
-MVP visual de una app de reservas de salas construido con Next.js 16 + Tailwind CSS.
+MVP funcional de una app de reservas de salas construido con Next.js 16 + Tailwind CSS.
 
-Qué incluye en este primer push:
-- vista semanal por sala
+Estado actual:
+- dashboard visual con vista semanal por sala
 - filtros por owner, participante, capacidad mínima y tipo de recurso
-- métricas rápidas de ocupación y reservas
-- estados visuales de reservas
-- datos demo listos para validar UX en Vercel
-- tests unitarios para reglas de reserva y helpers de agenda
-
-Importante:
-- esta versión todavía no usa base de datos ni autenticación real
-- está pensada para validar look & feel, navegación y estructura del dominio
-- el próximo paso natural es conectar Prisma + Auth.js + APIs de reservas
+- métricas rápidas y panel de "mis reservas"
+- API routes para listar salas, listar reservas, crear reserva y cancelar reserva
+- capa de servicio para reglas de negocio y validaciones
+- schema Prisma inicial listo para evolucionar a PostgreSQL
+- fallback demo en memoria para que el proyecto siga deployando sin depender aún de una base real
 
 ## Scripts
 
@@ -23,27 +19,53 @@ npm run dev
 npm run lint
 npm run test:run
 npm run build
+npm run prisma:validate
+npm run prisma:generate
+```
+
+## Endpoints disponibles
+
+```bash
+GET  /api/rooms
+GET  /api/bookings?week=2026-04-22&userEmail=ana@empresa.com
+GET  /api/bookings?mine=true&userEmail=ana@empresa.com
+POST /api/bookings
+POST /api/bookings/:id/cancel
+```
+
+Ejemplo de creación:
+
+```bash
+curl -X POST http://localhost:3000/api/bookings   -H 'content-type: application/json'   -d '{
+    "roomId": "delta",
+    "date": "2026-04-24",
+    "start": "09:00",
+    "end": "10:00",
+    "title": "Entrevista final",
+    "requester": "ana@empresa.com",
+    "participants": ["rrhh@empresa.com"],
+    "reason": "Hiring loop",
+    "requiresApproval": true
+  }'
 ```
 
 ## Deploy en Vercel
 
-Este snapshot no requiere variables de entorno para funcionar.
+Hoy puede deployarse sin variables reales porque usa un fallback demo en memoria.
 
-Pasos:
-1. importar el repo en Vercel
-2. framework preset: Next.js
-3. install command: `npm install`
-4. build command: `npm run build`
-5. output: default de Next.js
+Si luego querés pasar a productivo:
+1. configurar `DATABASE_URL`
+2. correr migraciones Prisma
+3. reemplazar el repositorio demo por el repositorio Prisma
+4. conectar Auth.js para sesión y roles reales
 
 ## Variables de entorno
 
-Hoy no son necesarias para el demo visual. Dejé `.env.example` preparado para la siguiente iteración.
+Ver `.env.example`.
 
-## Siguiente iteración sugerida
+## Próximos pasos sugeridos
 
-- Prisma schema para salas, reservas y usuarios
+- repositorio Prisma real detrás de la capa de servicio
 - Auth.js con roles `admin` y `usuario`
-- API routes para listar/crear/cancelar reservas
-- persistencia real de filtros y mis reservas
-- bloqueo de solapamientos y políticas configurables desde admin
+- formularios UI para crear/cancelar reservas desde la app
+- pantalla de admin para auditoría, días bloqueados y aprobación manual

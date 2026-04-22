@@ -1,17 +1,8 @@
 import Link from "next/link";
 import { format, parseISO } from "date-fns";
 import { bookingVisualState } from "@/lib/booking-rules";
-import {
-  bookings,
-  buildWeekDays,
-  filterRooms,
-  getDashboardStats,
-  getWeekNavigation,
-  getWeeklyBookingsByRoom,
-  normalizeWeekAnchor,
-  rooms,
-  type Booking,
-} from "@/lib/schedule";
+import { getBookingService } from "@/lib/server-data";
+import { getWeekNavigation, normalizeWeekAnchor, rooms, type Booking } from "@/lib/schedule";
 
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 
@@ -94,7 +85,6 @@ export default async function Home({
 }) {
   const params = await searchParams;
   const weekAnchor = normalizeWeekAnchor(pickFirst(params.week));
-  const weekDays = buildWeekDays(weekAnchor);
   const navigation = getWeekNavigation(weekAnchor);
 
   const filters = {
@@ -105,11 +95,17 @@ export default async function Home({
     query: pickFirst(params.q) ?? "",
   };
 
-  const filteredRooms = filterRooms(rooms, bookings, filters);
-  const roomIds = new Set(filteredRooms.map((room) => room.id));
-  const filteredBookings = bookings.filter((booking) => roomIds.has(booking.roomId));
-  const weeklyBookings = getWeeklyBookingsByRoom(filteredRooms, filteredBookings, weekDays);
-  const stats = getDashboardStats(filteredRooms, filteredBookings, weekDays);
+  const currentUser = "ana@empresa.com";
+  const snapshot = await getBookingService().getDashboardSnapshot({
+    week: weekAnchor,
+    userEmail: currentUser,
+    filters,
+  });
+  const weekDays = snapshot.weekDays;
+  const filteredRooms = snapshot.rooms;
+  const weeklyBookings = snapshot.grouped;
+  const stats = snapshot.stats;
+  const myBookings = snapshot.myBookings;
   const owners = Array.from(new Set(rooms.map((room) => room.owner))).sort();
   const resourceTypes = Array.from(new Set(rooms.map((room) => room.type)));
 
@@ -248,6 +244,25 @@ export default async function Home({
 
           <div className="mt-6 rounded-3xl border border-emerald-400/20 bg-emerald-500/10 p-4 text-sm leading-6 text-emerald-100">
             Próximo paso recomendado: conectar este layout con Prisma + Auth.js y persistir reservas reales.
+          </div>
+
+          <div className="mt-6 rounded-3xl border border-white/10 bg-white/5 p-4">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <p className="text-sm uppercase tracking-[0.25em] text-slate-400">Mis reservas</p>
+                <p className="mt-1 text-sm text-slate-300">Usuario demo: {currentUser}</p>
+              </div>
+              <span className="rounded-full border border-white/10 px-3 py-1 text-xs text-slate-300">{myBookings.length} items</span>
+            </div>
+            <div className="mt-4 space-y-3">
+              {myBookings.slice(0, 3).map((booking) => (
+                <article key={booking.id} className="rounded-2xl border border-white/10 bg-slate-900/60 p-3 text-sm">
+                  <p className="font-medium text-white">{booking.title}</p>
+                  <p className="mt-1 text-slate-400">{booking.date} · {booking.start} - {booking.end}</p>
+                  <p className="mt-1 text-slate-500">{booking.requester === currentUser ? "Solicitada por mí" : "Soy participante"}</p>
+                </article>
+              ))}
+            </div>
           </div>
         </aside>
 
