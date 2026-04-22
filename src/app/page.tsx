@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { format, parseISO } from "date-fns";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { bookingVisualState } from "@/lib/booking-rules";
 import { getBookingService } from "@/lib/server-data";
 import { getWeekNavigation, normalizeWeekAnchor, rooms, type Booking } from "@/lib/schedule";
@@ -195,7 +196,8 @@ export default async function Home({
               <div className="rounded-full border border-white/10 bg-black/20 px-4 py-2 text-sm text-slate-400">
                 Quick look listo para demo · {weekRange}
               </div>
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
+                <ThemeToggle />
                 <Link
                   href="/api/rooms"
                   className="rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-sm text-slate-200 transition hover:border-white/20 hover:bg-white/[0.06]"
