@@ -1,7 +1,10 @@
 import Link from "next/link";
 import { format, parseISO } from "date-fns";
+import { BookingForm } from "@/components/booking-form";
+import { CancelBookingButton } from "@/components/cancel-booking-button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { bookingVisualState } from "@/lib/booking-rules";
+import { canManageBookingFromUi } from "@/lib/booking-form";
 import { getBookingService } from "@/lib/server-data";
 import { getWeekNavigation, normalizeWeekAnchor, rooms, type Booking } from "@/lib/schedule";
 
@@ -172,6 +175,7 @@ export default async function Home({
   const weeklyBookings = snapshot.grouped;
   const stats = snapshot.stats;
   const myBookings = snapshot.myBookings;
+  const bookingRooms = filteredRooms.length > 0 ? filteredRooms : rooms;
   const owners = Array.from(new Set(rooms.map((room) => room.owner))).sort();
   const resourceTypes = Array.from(new Set(rooms.map((room) => room.type)));
 
@@ -399,6 +403,22 @@ export default async function Home({
           <Surface className="p-6">
             <div className="flex items-center justify-between gap-3">
               <div>
+                <SectionEyebrow>Operación real</SectionEyebrow>
+                <h2 className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-[var(--text-primary)]">Nueva reserva</h2>
+              </div>
+              <span className="rounded-full border border-[var(--border-strong)] bg-[var(--surface-2)] px-3 py-1 text-xs uppercase tracking-[0.22em] text-[var(--text-secondary)]">
+                Sprint 1
+              </span>
+            </div>
+            <p className="mt-3 text-sm leading-6 text-[var(--text-muted)]">
+              Ya podés crear una reserva desde la UI y refrescar el dashboard sin salir de la pantalla.
+            </p>
+            <BookingForm rooms={bookingRooms} currentUser={currentUser} defaultDate={weekDays[0]?.iso ?? weekAnchor} />
+          </Surface>
+
+          <Surface className="p-6">
+            <div className="flex items-center justify-between gap-3">
+              <div>
                 <SectionEyebrow>My workspace</SectionEyebrow>
                 <h2 className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-[var(--text-primary)]">Mis reservas</h2>
               </div>
@@ -407,25 +427,33 @@ export default async function Home({
               </span>
             </div>
             <div className="mt-5 space-y-3">
-              {myBookings.slice(0, 4).map((booking) => {
-                const badge = badgeForBooking(booking, currentUser);
-                return (
-                  <article key={booking.id} className="rounded-[22px] border border-[var(--border-strong)] bg-[var(--surface-2)] p-4">
-                    <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <p className="font-medium text-[var(--text-primary)]">{booking.title}</p>
-                        <p className="mt-1 text-sm text-[var(--text-muted)]">{booking.date} · {booking.start} - {booking.end}</p>
+              {myBookings.length === 0 ? (
+                <div className="rounded-[22px] border border-dashed border-[var(--border-strong)] bg-[var(--surface-2)] px-4 py-6 text-sm text-[var(--text-muted)]">
+                  Todavía no hay reservas asociadas al usuario actual.
+                </div>
+              ) : (
+                myBookings.map((booking) => {
+                  const badge = badgeForBooking(booking, currentUser);
+                  const canCancel = canManageBookingFromUi(booking, currentUser);
+                  return (
+                    <article key={booking.id} className="rounded-[22px] border border-[var(--border-strong)] bg-[var(--surface-2)] p-4">
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <p className="font-medium text-[var(--text-primary)]">{booking.title}</p>
+                          <p className="mt-1 text-sm text-[var(--text-muted)]">{booking.date} · {booking.start} - {booking.end}</p>
+                        </div>
+                        <span className={`rounded-full border px-2.5 py-1 text-[11px] uppercase tracking-[0.22em] ${badge.chip}`}>
+                          {badge.label}
+                        </span>
                       </div>
-                      <span className={`rounded-full border px-2.5 py-1 text-[11px] uppercase tracking-[0.22em] ${badge.chip}`}>
-                        {badge.label}
-                      </span>
-                    </div>
-                    <p className="mt-3 text-sm text-[var(--text-faint)]">
-                      {booking.requester === currentUser ? "Solicitada por mí" : "Soy participante"}
-                    </p>
-                  </article>
-                );
-              })}
+                      <p className="mt-3 text-sm text-[var(--text-faint)]">
+                        {booking.requester === currentUser ? "Solicitada por mí" : "Soy participante"}
+                      </p>
+                      {canCancel ? <CancelBookingButton bookingId={booking.id} actorEmail={currentUser} /> : null}
+                    </article>
+                  );
+                })
+              )}
             </div>
           </Surface>
         </div>
