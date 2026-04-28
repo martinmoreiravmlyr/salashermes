@@ -8,7 +8,8 @@ Estado actual:
 - métricas rápidas y panel de "mis reservas"
 - API routes para listar salas, listar reservas, crear reserva y cancelar reserva
 - capa de servicio para reglas de negocio y validaciones
-- schema Prisma inicial listo para evolucionar a PostgreSQL
+- schema Prisma inicial listo para PostgreSQL
+- repositorio Prisma real conectado cuando existe `DATABASE_URL`
 - fallback demo en memoria para que el proyecto siga deployando sin depender aún de una base real
 
 ## Scripts
@@ -55,9 +56,16 @@ Hoy puede deployarse sin variables reales porque usa un fallback demo en memoria
 
 Si luego querés pasar a productivo:
 1. configurar `DATABASE_URL`
-2. correr migraciones Prisma
-3. reemplazar el repositorio demo por el repositorio Prisma
-4. conectar Auth.js para sesión y roles reales
+2. correr migraciones Prisma contra PostgreSQL
+3. cargar salas/reservas iniciales en la base
+4. dejar `USE_DEMO_REPOSITORY` sin definir o en `false` para usar Prisma
+5. conectar Auth.js para sesión y roles reales
+
+Para forzar el fallback demo aunque exista `DATABASE_URL`:
+
+```bash
+USE_DEMO_REPOSITORY=true
+```
 
 ## Variables de entorno
 
@@ -65,7 +73,7 @@ Ver `.env.example`.
 
 ## Próximos pasos sugeridos
 
-- repositorio Prisma real detrás de la capa de servicio
+- seed productivo de salas reales y migraciones aplicadas
 - Auth.js con roles `admin` y `usuario`
 - formularios UI para crear/cancelar reservas desde la app
 - pantalla de admin para auditoría, días bloqueados y aprobación manual

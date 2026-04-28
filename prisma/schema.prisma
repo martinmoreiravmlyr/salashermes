@@ -19,6 +19,7 @@ enum BookingStatus {
 
 enum RoomType {
   SALA
+  BOX
   FOCUS
   AUDITORIO
 }
@@ -45,6 +46,7 @@ model Room {
   owner         String
   type          RoomType
   equipment     Json
+  color         String    @default("bg-slate-500")
   photoUrl      String?
   isReservable  Boolean   @default(true)
   createdAt     DateTime  @default(now())
