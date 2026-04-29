@@ -1,13 +1,45 @@
 "use client";
 
-import { useActionState } from "react";
-import { INITIAL_REGISTER_ACTION_STATE, registerUserAction } from "@/app/actions";
+import { useState, useTransition } from "react";
 
 export function RegisterForm() {
-  const [state, formAction, isPending] = useActionState(registerUserAction, INITIAL_REGISTER_ACTION_STATE);
+  const [feedback, setFeedback] = useState<{ status: "idle" | "success" | "error"; message: string }>({
+    status: "idle",
+    message: "",
+  });
+  const [isPending, startTransition] = useTransition();
 
   return (
-    <form action={formAction} className="space-y-3 rounded-[24px] border border-[var(--border-strong)] bg-[var(--surface-2)] p-4">
+    <form
+      className="space-y-3 rounded-[24px] border border-[var(--border-strong)] bg-[var(--surface-2)] p-4"
+      onSubmit={(event) => {
+        event.preventDefault();
+        const form = event.currentTarget;
+        const formData = new FormData(form);
+        setFeedback({ status: "idle", message: "" });
+
+        startTransition(async () => {
+          const response = await fetch('/api/register', {
+            method: 'POST',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({
+              name: formData.get('name')?.toString() ?? '',
+              email: formData.get('email')?.toString() ?? '',
+              password: formData.get('password')?.toString() ?? '',
+            }),
+          });
+
+          const data = (await response.json()) as { ok: boolean; message?: string; error?: string };
+          if (!response.ok || !data.ok) {
+            setFeedback({ status: 'error', message: data.error ?? 'No fue posible crear la cuenta.' });
+            return;
+          }
+
+          form.reset();
+          setFeedback({ status: 'success', message: data.message ?? 'Cuenta creada. Ahora podés iniciar sesión.' });
+        });
+      }}
+    >
       <p className="text-sm font-medium text-[var(--text-primary)]">Crear cuenta</p>
       <input
         name="name"
@@ -31,9 +63,9 @@ export function RegisterForm() {
         minLength={8}
         className="w-full rounded-2xl border border-[var(--border-strong)] bg-[var(--surface-1)] px-4 py-3 text-sm text-[var(--text-primary)] outline-none focus:border-[#7170ff]"
       />
-      {state.status !== "idle" && state.message ? (
-        <p className={`text-sm ${state.status === "success" ? "text-emerald-300" : "text-rose-300"}`}>
-          {state.message}
+      {feedback.status !== "idle" && feedback.message ? (
+        <p className={`text-sm ${feedback.status === "success" ? "text-emerald-300" : "text-rose-300"}`}>
+          {feedback.message}
         </p>
       ) : null}
       <button
