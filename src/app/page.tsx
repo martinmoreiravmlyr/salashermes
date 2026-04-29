@@ -8,6 +8,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { bookingVisualState } from "@/lib/booking-rules";
 import { canManageBookingFromUi } from "@/lib/booking-form";
 import { auth } from "@/lib/auth";
+import { getAuthAvailability } from "@/lib/auth-config";
 import { resolveSessionActor } from "@/lib/auth-credentials";
 import { getBookingService } from "@/lib/server-data";
 import { getWeekNavigation, normalizeWeekAnchor, rooms, type Booking } from "@/lib/schedule";
@@ -169,6 +170,7 @@ export default async function Home({
     query: pickFirst(params.q) ?? "",
   };
 
+  const authAvailability = getAuthAvailability(process.env);
   const session = await auth();
   const actor = session ? resolveSessionActor(session) : null;
   const currentUser = actor?.email ?? process.env.DEMO_USER_EMAIL ?? "ana@empresa.com";
@@ -275,7 +277,7 @@ export default async function Home({
                 <div className="rounded-[22px] border border-[var(--border-strong)] bg-[var(--surface-2)] p-4">
                   <p className="text-sm text-[var(--text-muted)]">{actor ? "Usuario autenticado" : "Modo público"}</p>
                   <p className="mt-2 text-xl font-semibold text-[var(--text-primary)]">{actor?.name ?? "Invitado"}</p>
-                  <p className="mt-1 text-sm text-[var(--text-faint)]">{actor ? actor.email : "Iniciá sesión para crear y cancelar reservas."}</p>
+                  <p className="mt-1 text-sm text-[var(--text-faint)]">{actor ? actor.email : authAvailability.reason === "missing-secret" ? "Falta NEXTAUTH_SECRET en este entorno." : "Iniciá sesión para crear y cancelar reservas."}</p>
                 </div>
 
                 {actor ? <SignOutButton /> : null}
@@ -297,7 +299,7 @@ export default async function Home({
                 <div className="rounded-[22px] border border-[#5e6ad2]/20 bg-[#5e6ad2]/10 p-4 text-sm leading-6 text-indigo-100">
                   {actor
                     ? "Tu sesión ya gobierna las reservas: el usuario sale del servidor y no de campos ocultos."
-                    : "Auth.js ya está integrado. Creá una cuenta o iniciá sesión para operar reservas reales."}
+                    : authAvailability.reason === "missing-secret" ? "La home queda operativa aunque falte NEXTAUTH_SECRET, pero tenés que configurarlo en Vercel para habilitar login." : "Auth.js ya está integrado. Creá una cuenta o iniciá sesión para operar reservas reales."}
                 </div>
               </div>
             </Surface>
@@ -425,13 +427,19 @@ export default async function Home({
             <p className="mt-3 text-sm leading-6 text-[var(--text-muted)]">
               {actor
                 ? "La reserva se crea con tu identidad de sesión y refresca el dashboard sin salir de la pantalla."
-                : "Primero iniciá sesión o creá una cuenta para habilitar la operación real sobre MongoDB."}
+                : authAvailability.reason === "missing-secret"
+                  ? "Este deploy no tiene NEXTAUTH_SECRET configurado. La home sigue levantando, pero el login queda deshabilitado hasta definirlo en Vercel."
+                  : "Primero iniciá sesión o creá una cuenta para habilitar la operación real sobre MongoDB."}
             </p>
             {actor ? (
               <BookingForm rooms={bookingRooms} currentUser={actor.email} defaultDate={weekDays[0]?.iso ?? weekAnchor} />
-            ) : (
+            ) : authAvailability.enabled ? (
               <div className="mt-5">
                 <AuthPanel />
+              </div>
+            ) : (
+              <div className="mt-5 rounded-[24px] border border-amber-500/20 bg-amber-500/10 p-4 text-sm leading-6 text-amber-100">
+                Auth deshabilitado en este entorno. En Vercel definí <strong>NEXTAUTH_SECRET</strong> y dejá <strong>MONGODB_URI</strong> configurado para habilitar login y operación autenticada.
               </div>
             )}
           </Surface>

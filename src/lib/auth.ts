@@ -1,6 +1,7 @@
 import NextAuth, { getServerSession, type NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { authorizeUser } from "@/lib/auth-credentials";
+import { getAuthAvailability } from "@/lib/auth-config";
 import { createMongoUserRepository } from "@/lib/mongoose-user-repository";
 
 export const authOptions: NextAuthOptions = {
@@ -56,6 +57,14 @@ export const authOptions: NextAuthOptions = {
 
 export const authHandler = NextAuth(authOptions);
 
+export function isAuthEnabled() {
+  return getAuthAvailability(process.env).enabled;
+}
+
 export function auth() {
+  if (!isAuthEnabled()) {
+    return Promise.resolve(null);
+  }
+
   return getServerSession(authOptions);
 }
