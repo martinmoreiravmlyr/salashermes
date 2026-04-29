@@ -48,15 +48,15 @@ export function BookingForm({
     }
 
     const dateInput = form.elements.namedItem("date") as HTMLInputElement | null;
-    const requesterInput = form.elements.namedItem("requester") as HTMLInputElement | null;
     if (dateInput) dateInput.value = defaultDate;
-    if (requesterInput) requesterInput.value = currentUser;
     router.refresh();
-  }, [currentUser, defaultDate, router, state.status]);
+  }, [defaultDate, router, state.status]);
 
   return (
     <form ref={formRef} action={formAction} className="mt-5 space-y-4">
-      <input type="hidden" name="requester" value={currentUser} />
+      <div className="rounded-2xl border border-[var(--border-strong)] bg-[var(--surface-2)] px-4 py-3 text-sm text-[var(--text-secondary)]">
+        Reservando como <span className="font-medium text-[var(--text-primary)]">{currentUser}</span>
+      </div>
 
       <label className="block space-y-2 text-sm text-[var(--text-secondary)]">
         <span>Sala</span>

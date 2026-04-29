@@ -4,15 +4,7 @@ import { useActionState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { cancelBookingAction, INITIAL_BOOKING_ACTION_STATE } from "@/app/actions";
 
-export function CancelBookingButton({
-  bookingId,
-  actorEmail,
-  isAdmin = false,
-}: {
-  bookingId: string;
-  actorEmail: string;
-  isAdmin?: boolean;
-}) {
+export function CancelBookingButton({ bookingId }: { bookingId: string }) {
   const router = useRouter();
   const [state, formAction, isPending] = useActionState(cancelBookingAction, INITIAL_BOOKING_ACTION_STATE);
 
@@ -25,8 +17,6 @@ export function CancelBookingButton({
   return (
     <form action={formAction} className="mt-4 space-y-3">
       <input type="hidden" name="bookingId" value={bookingId} />
-      <input type="hidden" name="actorEmail" value={actorEmail} />
-      <input type="hidden" name="isAdmin" value={String(isAdmin)} />
 
       {state.status !== "idle" && state.message ? (
         <p

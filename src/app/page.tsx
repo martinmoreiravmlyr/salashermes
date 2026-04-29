@@ -1,14 +1,20 @@
 import Link from "next/link";
 import { format, parseISO } from "date-fns";
+import { AuthPanel } from "@/components/auth-panel";
 import { BookingForm } from "@/components/booking-form";
 import { CancelBookingButton } from "@/components/cancel-booking-button";
+import { SignOutButton } from "@/components/sign-out-button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { bookingVisualState } from "@/lib/booking-rules";
 import { canManageBookingFromUi } from "@/lib/booking-form";
+import { auth } from "@/lib/auth";
+import { resolveSessionActor } from "@/lib/auth-credentials";
 import { getBookingService } from "@/lib/server-data";
 import { getWeekNavigation, normalizeWeekAnchor, rooms, type Booking } from "@/lib/schedule";
 
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
+
+export const dynamic = "force-dynamic";
 
 type BadgeTone = {
   label: string;
@@ -163,10 +169,12 @@ export default async function Home({
     query: pickFirst(params.q) ?? "",
   };
 
-  const currentUser = process.env.DEMO_USER_EMAIL ?? "ana@empresa.com";
+  const session = await auth();
+  const actor = session ? resolveSessionActor(session) : null;
+  const currentUser = actor?.email ?? process.env.DEMO_USER_EMAIL ?? "ana@empresa.com";
   const snapshot = await getBookingService().getDashboardSnapshot({
     week: weekAnchor,
-    userEmail: currentUser,
+    userEmail: actor?.email,
     filters,
   });
 
@@ -209,7 +217,7 @@ export default async function Home({
                   API rooms
                 </Link>
                 <Link
-                  href={`/api/bookings?week=${weekAnchor}&userEmail=${encodeURIComponent(currentUser)}`}
+                  href={`/api/bookings?week=${weekAnchor}${actor ? "" : `&userEmail=${encodeURIComponent(currentUser)}`}`}
                   className="rounded-full bg-[#5e6ad2] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#7170ff]"
                 >
                   API bookings
@@ -265,10 +273,12 @@ export default async function Home({
               <SectionEyebrow>Resumen ejecutivo</SectionEyebrow>
               <div className="mt-5 space-y-5">
                 <div className="rounded-[22px] border border-[var(--border-strong)] bg-[var(--surface-2)] p-4">
-                  <p className="text-sm text-[var(--text-muted)]">Usuario demo</p>
-                  <p className="mt-2 text-xl font-semibold text-[var(--text-primary)]">{currentUser}</p>
-                  <p className="mt-1 text-sm text-[var(--text-faint)]">Simula el panel de “mis reservas”.</p>
+                  <p className="text-sm text-[var(--text-muted)]">{actor ? "Usuario autenticado" : "Modo público"}</p>
+                  <p className="mt-2 text-xl font-semibold text-[var(--text-primary)]">{actor?.name ?? "Invitado"}</p>
+                  <p className="mt-1 text-sm text-[var(--text-faint)]">{actor ? actor.email : "Iniciá sesión para crear y cancelar reservas."}</p>
                 </div>
+
+                {actor ? <SignOutButton /> : null}
 
                 <div className="space-y-3">
                   {legendItems.map((item) => (
@@ -285,7 +295,9 @@ export default async function Home({
                 </div>
 
                 <div className="rounded-[22px] border border-[#5e6ad2]/20 bg-[#5e6ad2]/10 p-4 text-sm leading-6 text-indigo-100">
-                  Próxima fase técnica: reemplazar el repositorio demo por Prisma real y sumar Auth.js.
+                  {actor
+                    ? "Tu sesión ya gobierna las reservas: el usuario sale del servidor y no de campos ocultos."
+                    : "Auth.js ya está integrado. Creá una cuenta o iniciá sesión para operar reservas reales."}
                 </div>
               </div>
             </Surface>
@@ -411,9 +423,17 @@ export default async function Home({
               </span>
             </div>
             <p className="mt-3 text-sm leading-6 text-[var(--text-muted)]">
-              Ya podés crear una reserva desde la UI y refrescar el dashboard sin salir de la pantalla.
+              {actor
+                ? "La reserva se crea con tu identidad de sesión y refresca el dashboard sin salir de la pantalla."
+                : "Primero iniciá sesión o creá una cuenta para habilitar la operación real sobre MongoDB."}
             </p>
-            <BookingForm rooms={bookingRooms} currentUser={currentUser} defaultDate={weekDays[0]?.iso ?? weekAnchor} />
+            {actor ? (
+              <BookingForm rooms={bookingRooms} currentUser={actor.email} defaultDate={weekDays[0]?.iso ?? weekAnchor} />
+            ) : (
+              <div className="mt-5">
+                <AuthPanel />
+              </div>
+            )}
           </Surface>
 
           <Surface className="p-6">
@@ -434,7 +454,7 @@ export default async function Home({
               ) : (
                 myBookings.map((booking) => {
                   const badge = badgeForBooking(booking, currentUser);
-                  const canCancel = canManageBookingFromUi(booking, currentUser);
+                  const canCancel = actor ? canManageBookingFromUi(booking, actor.email, actor.isAdmin) : false;
                   return (
                     <article key={booking.id} className="rounded-[22px] border border-[var(--border-strong)] bg-[var(--surface-2)] p-4">
                       <div className="flex items-start justify-between gap-3">
@@ -449,7 +469,7 @@ export default async function Home({
                       <p className="mt-3 text-sm text-[var(--text-faint)]">
                         {booking.requester === currentUser ? "Solicitada por mí" : "Soy participante"}
                       </p>
-                      {canCancel ? <CancelBookingButton bookingId={booking.id} actorEmail={currentUser} /> : null}
+                      {canCancel ? <CancelBookingButton bookingId={booking.id} /> : null}
                     </article>
                   );
                 })
@@ -464,7 +484,7 @@ export default async function Home({
           <SectionEyebrow>Infra</SectionEyebrow>
           <h3 className="mt-2 text-xl font-semibold tracking-[-0.04em] text-[var(--text-primary)]">Backend listo para la siguiente demo</h3>
           <p className="mt-3 text-sm leading-6 text-[var(--text-muted)]">
-            Ya existe schema Prisma, service layer y endpoints para crear, listar y cancelar reservas.
+            Ya existe persistencia real en Mongo, auth por sesión y endpoints para crear, listar y cancelar reservas.
           </p>
         </Surface>
         <Surface className="p-6">
@@ -478,7 +498,7 @@ export default async function Home({
           <SectionEyebrow>Siguiente sprint</SectionEyebrow>
           <h3 className="mt-2 text-xl font-semibold tracking-[-0.04em] text-[var(--text-primary)]">Auth, forms y persistencia real</h3>
           <p className="mt-3 text-sm leading-6 text-[var(--text-muted)]">
-            Lo que sigue es completar la operación end-to-end: login, formularios y PostgreSQL productivo.
+            Lo que sigue es profundizar aprobaciones, auditoría y experiencia admin sobre la base real.
           </p>
         </Surface>
       </section>

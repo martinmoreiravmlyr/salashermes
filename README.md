@@ -6,6 +6,8 @@ Estado actual:
 - dashboard visual con vista semanal por sala
 - filtros por owner, participante, capacidad mínima y tipo de recurso
 - métricas rápidas y panel de "mis reservas"
+- UI real para crear y cancelar reservas desde la app
+- Auth.js con credenciales y sesiones JWT respaldadas por MongoDB
 - API routes para listar salas, listar reservas, crear reserva y cancelar reserva
 - capa de servicio para reglas de negocio y validaciones
 - persistencia real con MongoDB + Mongoose cuando existe `MONGODB_URI`
@@ -28,27 +30,17 @@ npm run prisma:generate
 
 ```bash
 GET  /api/rooms
-GET  /api/bookings?week=2026-04-22&userEmail=ana@empresa.com
-GET  /api/bookings?mine=true&userEmail=ana@empresa.com
+GET  /api/bookings?week=2026-04-22
+GET  /api/bookings?mine=true&week=2026-04-22
 POST /api/bookings
 POST /api/bookings/:id/cancel
+POST /api/auth/[...nextauth]
+GET  /api/auth/[...nextauth]
 ```
 
-Ejemplo de creación:
-
-```bash
-curl -X POST http://localhost:3000/api/bookings   -H 'content-type: application/json'   -d '{
-    "roomId": "delta",
-    "date": "2026-04-24",
-    "start": "09:00",
-    "end": "10:00",
-    "title": "Entrevista final",
-    "requester": "ana@empresa.com",
-    "participants": ["rrhh@empresa.com"],
-    "reason": "Hiring loop",
-    "requiresApproval": true
-  }'
-```
+Notas:
+- `POST /api/bookings` y `POST /api/bookings/:id/cancel` usan la sesión actual, no confían en emails enviados por el cliente.
+- `GET /api/bookings` usa la sesión si existe; si no, puede aceptar `userEmail` para modo demo/público.
 
 ## Persistencia
 
@@ -61,7 +53,25 @@ Orden de prioridad actual:
 Cuando se usa MongoDB:
 - las salas base se sincronizan automáticamente en la colección `rooms`
 - las reservas se guardan en la colección `bookings`
+- los usuarios de Auth.js se guardan en la colección `users`
 - no hace falta Prisma para operar la reserva real
+
+## Auth.js
+
+El login actual usa credenciales (email + password) con sesión JWT.
+
+Flujo:
+1. crear cuenta desde la UI principal
+2. iniciar sesión
+3. crear y cancelar reservas con identidad tomada del servidor
+
+Variables mínimas:
+
+```bash
+MONGODB_URI="mongodb://localhost:27017/salashermes"
+NEXTAUTH_SECRET="change-me"
+NEXTAUTH_URL="http://localhost:3000"
+```
 
 ## Deploy en Vercel
 
@@ -69,9 +79,10 @@ Hoy puede deployarse sin variables reales porque usa un fallback demo en memoria
 
 Si querés usar MongoDB en productivo:
 1. configurar `MONGODB_URI`
-2. dejar `USE_DEMO_REPOSITORY` sin definir o en `false`
-3. levantar la app y dejar que sincronice las salas base
-4. conectar Auth.js para sesión y roles reales
+2. configurar `NEXTAUTH_SECRET`
+3. configurar `NEXTAUTH_URL`
+4. dejar `USE_DEMO_REPOSITORY` sin definir o en `false`
+5. levantar la app y dejar que sincronice las salas base
 
 Si preferís PostgreSQL:
 1. configurar `DATABASE_URL`
@@ -85,7 +96,7 @@ Ver `.env.example`.
 
 ## Próximos pasos sugeridos
 
-- Auth.js con roles `admin` y `usuario`
-- formularios UI para crear/cancelar reservas desde la app
-- pantalla de admin para auditoría, días bloqueados y aprobación manual
+- roles admin reales con aprobaciones manuales
+- pantalla de auditoría y días bloqueados
 - script de seed/backfill para mover reservas demo a MongoDB o PostgreSQL
+- integración de identidad corporativa/SSO en lugar de credenciales locales

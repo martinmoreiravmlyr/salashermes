@@ -1,4 +1,5 @@
 import mongoose, { Schema, type Model } from "mongoose";
+import { getMongooseConnection } from "@/lib/mongoose-connection";
 import type { BookingRepository, BookingRecord } from "@/lib/booking-service";
 import { rooms as scheduleRooms, type BookingStatus, type Room, type RoomType } from "@/lib/schedule";
 
@@ -43,10 +44,6 @@ type MongoAdapter = {
 };
 
 type MongoAdapterProvider = () => Promise<MongoAdapter>;
-
-declare global {
-  var __salasMongoConnectionPromise: Promise<typeof mongoose> | undefined;
-}
 
 const ROOM_TYPES: RoomType[] = ["sala", "box", "focus"];
 const BOOKING_STATUSES: BookingStatus[] = ["CONFIRMED", "PENDING", "CANCELLED"];
@@ -138,20 +135,8 @@ function toMongoBookingDocument(booking: BookingRecord, current?: MongoBookingDo
   };
 }
 
-async function getMongoConnection() {
-  if (!process.env.MONGODB_URI) {
-    throw new Error("MONGODB_URI no está configurado.");
-  }
-
-  if (!globalThis.__salasMongoConnectionPromise) {
-    globalThis.__salasMongoConnectionPromise = mongoose.connect(process.env.MONGODB_URI);
-  }
-
-  return globalThis.__salasMongoConnectionPromise;
-}
-
 async function getMongoAdapter(): Promise<MongoAdapter> {
-  const connection = await getMongoConnection();
+  const connection = await getMongooseConnection();
   const RoomModel = roomModel(connection);
   const BookingModel = bookingModel(connection);
 
