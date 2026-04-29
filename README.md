@@ -8,9 +8,9 @@ Estado actual:
 - métricas rápidas y panel de "mis reservas"
 - API routes para listar salas, listar reservas, crear reserva y cancelar reserva
 - capa de servicio para reglas de negocio y validaciones
-- schema Prisma inicial listo para PostgreSQL
-- repositorio Prisma real conectado cuando existe `DATABASE_URL`
-- fallback demo en memoria para que el proyecto siga deployando sin depender aún de una base real
+- persistencia real con MongoDB + Mongoose cuando existe `MONGODB_URI`
+- alternativa Prisma + PostgreSQL todavía disponible cuando existe `DATABASE_URL`
+- fallback demo en memoria para que el proyecto siga deployando sin depender de una base real
 
 ## Scripts
 
@@ -50,22 +50,34 @@ curl -X POST http://localhost:3000/api/bookings   -H 'content-type: application/
   }'
 ```
 
+## Persistencia
+
+Orden de prioridad actual:
+1. `USE_DEMO_REPOSITORY=true` fuerza demo en memoria
+2. `MONGODB_URI` activa MongoDB + Mongoose
+3. `DATABASE_URL` activa Prisma + PostgreSQL
+4. si no hay variables, se usa demo en memoria
+
+Cuando se usa MongoDB:
+- las salas base se sincronizan automáticamente en la colección `rooms`
+- las reservas se guardan en la colección `bookings`
+- no hace falta Prisma para operar la reserva real
+
 ## Deploy en Vercel
 
 Hoy puede deployarse sin variables reales porque usa un fallback demo en memoria.
 
-Si luego querés pasar a productivo:
+Si querés usar MongoDB en productivo:
+1. configurar `MONGODB_URI`
+2. dejar `USE_DEMO_REPOSITORY` sin definir o en `false`
+3. levantar la app y dejar que sincronice las salas base
+4. conectar Auth.js para sesión y roles reales
+
+Si preferís PostgreSQL:
 1. configurar `DATABASE_URL`
 2. correr migraciones Prisma contra PostgreSQL
 3. cargar salas/reservas iniciales en la base
-4. dejar `USE_DEMO_REPOSITORY` sin definir o en `false` para usar Prisma
-5. conectar Auth.js para sesión y roles reales
-
-Para forzar el fallback demo aunque exista `DATABASE_URL`:
-
-```bash
-USE_DEMO_REPOSITORY=true
-```
+4. dejar `USE_DEMO_REPOSITORY` sin definir o en `false`
 
 ## Variables de entorno
 
@@ -73,7 +85,7 @@ Ver `.env.example`.
 
 ## Próximos pasos sugeridos
 
-- seed productivo de salas reales y migraciones aplicadas
 - Auth.js con roles `admin` y `usuario`
 - formularios UI para crear/cancelar reservas desde la app
 - pantalla de admin para auditoría, días bloqueados y aprobación manual
+- script de seed/backfill para mover reservas demo a MongoDB o PostgreSQL

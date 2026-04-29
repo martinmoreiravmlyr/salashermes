@@ -1,5 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { createBookingService, createDemoRepository, createInMemoryRepository } from "@/lib/booking-service";
+import { createMongoRepository } from "@/lib/mongoose-repository";
+import { resolvePersistenceProvider } from "@/lib/persistence-provider";
 import { createPrismaRepository } from "@/lib/prisma-repository";
 import { bookings, rooms } from "@/lib/schedule";
 
@@ -25,7 +27,13 @@ function getPrismaClient() {
 }
 
 export function getBookingService() {
-  if (process.env.DATABASE_URL && process.env.USE_DEMO_REPOSITORY !== "true") {
+  const provider = resolvePersistenceProvider(process.env);
+
+  if (provider === "mongo") {
+    return createBookingService(createMongoRepository());
+  }
+
+  if (provider === "prisma") {
     return createBookingService(createPrismaRepository(getPrismaClient()));
   }
 
