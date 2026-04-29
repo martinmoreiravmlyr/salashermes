@@ -1,4 +1,5 @@
 import { authHandler, isAuthEnabled } from "@/lib/auth";
+import { runAuthHandler } from "@/lib/auth-route";
 
 function disabledResponse() {
   return Response.json(
@@ -14,7 +15,7 @@ export async function GET(request: Request, context: { params: Promise<{ nextaut
     return disabledResponse();
   }
 
-  return authHandler.GET(request, context);
+  return runAuthHandler(authHandler, request, context);
 }
 
 export async function POST(request: Request, context: { params: Promise<{ nextauth: string[] }> }) {
@@ -22,5 +23,5 @@ export async function POST(request: Request, context: { params: Promise<{ nextau
     return disabledResponse();
   }
 
-  return authHandler.POST(request, context);
+  return runAuthHandler(authHandler, request, context);
 }
