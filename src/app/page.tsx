@@ -201,7 +201,7 @@ export default async function Home({
                 SH
               </div>
               <div>
-                <p className="text-sm font-medium text-[var(--text-primary)]">Salas Hermes</p>
+                <p className="text-sm font-medium text-[var(--text-primary)]">Salas WPP</p>
                 <p className="text-sm text-[var(--text-muted)]">Presentación interna · workspace Montevideo</p>
               </div>
             </div>

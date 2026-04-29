@@ -1,4 +1,4 @@
-# Salas Hermes UI + Auth.js plan
+# Salas WPP UI + Auth.js plan
 
 Goal: replace request-body user identity with session-backed Auth.js credentials login, and keep the booking UI usable for real create/cancel flows against Mongo.
 

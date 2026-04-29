@@ -1,4 +1,4 @@
-# Salas Hermes
+# Salas WPP
 
 MVP funcional de una app de reservas de salas construido con Next.js 16 + Tailwind CSS.
 

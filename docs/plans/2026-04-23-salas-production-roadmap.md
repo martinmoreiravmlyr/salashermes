@@ -1,4 +1,4 @@
-# Salas Hermes / Salas WPP - roadmap a producción
+# Salas WPP - roadmap a producción
 
 > For Hermes: ejecutar este plan por sprint, con TDD en la lógica de negocio y verificación de lint/tests/build/prisma al cerrar cada bloque.
 
