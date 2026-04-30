@@ -86,15 +86,16 @@ export function createBookingService(repository: BookingRepository) {
     async getDashboardSnapshot(input: DashboardSnapshotInput) {
       const rooms = await repository.listRooms();
       const bookings = await repository.listBookings();
+      const activeBookings = bookings.filter((booking) => booking.status !== "CANCELLED");
       const week = normalizeWeekAnchor(input.week);
       const weekDays = buildWeekDays(week);
-      const filteredRooms = filterRooms(rooms, bookings, input.filters);
+      const filteredRooms = filterRooms(rooms, activeBookings, input.filters);
       const visibleRoomIds = new Set(filteredRooms.map((room) => room.id));
-      const visibleBookings = bookings.filter((booking) => visibleRoomIds.has(booking.roomId));
+      const visibleBookings = activeBookings.filter((booking) => visibleRoomIds.has(booking.roomId));
       const grouped = getWeeklyBookingsByRoom(filteredRooms, visibleBookings, weekDays);
       const stats = getDashboardStats(filteredRooms, visibleBookings, weekDays);
       const myBookings = input.userEmail
-        ? bookings.filter(
+        ? activeBookings.filter(
             (booking) =>
               booking.requester === input.userEmail ||
               booking.participants.some((participant) => participant === input.userEmail),
