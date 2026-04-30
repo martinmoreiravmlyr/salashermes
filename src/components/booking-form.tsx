@@ -1,13 +1,14 @@
 "use client";
 
-import { useActionState, useEffect, useRef } from "react";
+import { useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import {
-  createBookingAction,
-  INITIAL_BOOKING_ACTION_STATE,
-  type BookingActionState,
-} from "@/app/actions";
+import type { BookingActionState } from "@/app/actions";
 import type { Room } from "@/lib/schedule";
+
+const INITIAL_BOOKING_ACTION_STATE: BookingActionState = {
+  status: "idle",
+  message: "",
+};
 
 function Feedback({ state }: { state: BookingActionState }) {
   if (state.status === "idle" || !state.message) {
@@ -33,27 +34,63 @@ export function BookingForm({
 }) {
   const router = useRouter();
   const formRef = useRef<HTMLFormElement>(null);
-  const [state, formAction, isPending] = useActionState(createBookingAction, INITIAL_BOOKING_ACTION_STATE);
-
-  useEffect(() => {
-    if (state.status !== "success") {
-      return;
-    }
-
-    formRef.current?.reset();
-    const form = formRef.current;
-    if (!form) {
-      router.refresh();
-      return;
-    }
-
-    const dateInput = form.elements.namedItem("date") as HTMLInputElement | null;
-    if (dateInput) dateInput.value = defaultDate;
-    router.refresh();
-  }, [defaultDate, router, state.status]);
+  const [state, setState] = useState<BookingActionState>(INITIAL_BOOKING_ACTION_STATE);
+  const [isPending, startTransition] = useTransition();
 
   return (
-    <form ref={formRef} action={formAction} className="mt-5 space-y-4">
+    <form
+      ref={formRef}
+      className="mt-5 space-y-4"
+      onSubmit={(event) => {
+        event.preventDefault();
+        const form = event.currentTarget;
+        const formData = new FormData(form);
+        setState(INITIAL_BOOKING_ACTION_STATE);
+
+        startTransition(async () => {
+          const response = await fetch("/api/bookings", {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({
+              roomId: formData.get("roomId")?.toString() ?? "",
+              date: formData.get("date")?.toString() ?? "",
+              start: formData.get("start")?.toString() ?? "",
+              end: formData.get("end")?.toString() ?? "",
+              title: formData.get("title")?.toString() ?? "",
+              participants: formData.get("participants")?.toString() ?? "",
+              reason: formData.get("reason")?.toString() ?? "",
+              requiresApproval: formData.get("requiresApproval") === "on",
+            }),
+          });
+
+          const data = (await response.json()) as {
+            booking?: { status?: string };
+            error?: string;
+          };
+
+          if (!response.ok || !data.booking) {
+            setState({
+              status: "error",
+              message: data.error ?? "No fue posible crear la reserva.",
+            });
+            return;
+          }
+
+          form.reset();
+          const dateInput = form.elements.namedItem("date") as HTMLInputElement | null;
+          if (dateInput) dateInput.value = defaultDate;
+
+          setState({
+            status: "success",
+            message:
+              data.booking.status === "PENDING"
+                ? "Reserva creada y enviada a aprobación."
+                : "Reserva creada correctamente.",
+          });
+          router.refresh();
+        });
+      }}
+    >
       <div className="rounded-2xl border border-[var(--border-strong)] bg-[var(--surface-2)] px-4 py-3 text-sm text-[var(--text-secondary)]">
         Reservando como <span className="font-medium text-[var(--text-primary)]">{currentUser}</span>
       </div>
