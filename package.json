@@ -12,7 +12,8 @@
     "test:run": "vitest run",
     "prisma:validate": "prisma validate",
     "prisma:generate": "prisma generate",
-    "test:smoke-auth-booking": "node scripts/auth-booking-smoke.mjs"
+    "test:smoke-auth-booking": "node scripts/auth-booking-smoke.mjs",
+    "telegram-agent:help": "node scripts/telegram-agent-client.mjs help"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.2",
